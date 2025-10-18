@@ -1,0 +1,12 @@
+# Java/Maven build artifacts
+/target/
+*.jar
+*.class
+
+# Log files
+*.log
+/logs/
+
+# Local IDE settings
+/.vscode/
+.idea/
