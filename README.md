@@ -52,7 +52,7 @@ The application will start on `http://localhost:8080`
 ```json
 {
     "name": "Print Hello",
-    "owner": "John Smith",
+    "owner": "Mahesh",
     "command": "echo Hello World!"
 }
 ```
