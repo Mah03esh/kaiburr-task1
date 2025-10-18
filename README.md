@@ -85,11 +85,7 @@ The application includes command validation to prevent execution of potentially 
 
 ## MongoDB Configuration
 
-The application connects to MongoDB Atlas using the connection string in `application.properties`:
-
-```properties
-spring.data.mongodb.uri=mongodb+srv://[username]:[password]@cluster0.emfxz5n.mongodb.net/KaiburrAssessmentDB?retryWrites=true&w=majority&appName=Cluster0
-```
+The application connects to MongoDB Atlas using the connection string in `application.properties`
 
 ## Task Execution
 
