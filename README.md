@@ -88,16 +88,16 @@ The application connects to MongoDB Atlas using the connection string in `applic
 ## API Test Screenshots
 
 ### 1. Application Startup
-![Application Startup](./screenshots/1-start.png)
+![Application Startup](screenshots/1-start.png)
 
 ### 2. Create Task (PUT /api/tasks)
-![Create Task](./screenshots/2.png)
+![Create Task](screenshots/2.png)
 
 ### 3. Get All Tasks (GET /api/tasks)
-![Get All Tasks](./screenshots/3.png)
+![Get All Tasks](screenshots/3.png)
 
 ### 4. Execute Task (PUT /api/tasks/execute/{id})
-![Execute Task](./screenshots/4.png)
+![Execute Task](screenshots/4.png)
 
 ### 5. Delete Task (DELETE /api/tasks/{id})
-![Delete Task](./screenshots/5.png)
+![Delete Task](screenshots/5.png)
