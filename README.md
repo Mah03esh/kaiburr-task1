@@ -98,22 +98,155 @@ When a task is executed via the `/api/tasks/execute/{id}` endpoint:
 5. Adds the execution details to the task's execution history
 6. Saves and returns the updated task
 
-## API Test Screenshots
+## API Testing Documentation
 
-### 1. Application Startup
-![Application Startup](screenshots/1-start.png)
+### Test Scenarios (Gherkin Format)
 
-### 2. Create Task (PUT /api/tasks)
+#### Scenario 1: Create a New Task
+**Feature:** Task Creation via REST API
+
+```gherkin
+Given the application is running on localhost:8080
+When I send a PUT request to "/api/tasks"
+  And the request body contains a valid task JSON:
+    {
+      "name": "Print Hello",
+      "owner": "Mahesh",
+      "command": "echo Hello World!"
+    }
+Then I should receive a 201 Created response
+  And the response body should contain the created task with a generated ID
+  And the task should be persisted in MongoDB
+```
+
+**Screenshot:**
 ![Create Task](screenshots/2.png)
 
-### 3. Get All Tasks (GET /api/tasks)
+---
+
+#### Scenario 2: Retrieve All Tasks
+**Feature:** List All Tasks
+
+```gherkin
+Given tasks exist in the database
+When I send a GET request to "/api/tasks"
+Then I should receive a 200 OK response
+  And the response body should contain an array of all tasks
+  And each task should have id, name, owner, command, and taskExecutions fields
+```
+
+**Screenshot:**
 ![Get All Tasks](screenshots/3.png)
 
-### 4. Execute Task (PUT /api/tasks/execute/{id})
+---
+
+#### Scenario 3: Search Tasks by Name - Found
+**Feature:** Search Tasks Containing Name String
+
+```gherkin
+Given a task with name "Print Hello" exists in the database
+When I send a GET request to "/api/tasks/find?name=Hello"
+Then I should receive a 200 OK response
+  And the response body should contain an array of matching tasks
+  And each task name should contain the search string "Hello"
+```
+
+**Screenshot:**
+![Search Tasks - Found](screenshots/6.png)
+
+---
+
+#### Scenario 4: Search Tasks by Name - Not Found
+**Feature:** Search Tasks Returning 404 When Not Found
+
+```gherkin
+Given no tasks with name containing "XYZ_Not_A_Task" exist in the database
+When I send a GET request to "/api/tasks/find?name=XYZ_Not_A_Task"
+Then I should receive a 404 Not Found response
+  And the response body should be empty
+```
+
+---
+
+#### Scenario 5: Execute a Task
+**Feature:** Task Execution with Command Execution
+
+```gherkin
+Given a task with id "673f0d13f417d5864d28c1c7c" exists in the database
+  And the task has command "echo Hello World!"
+When I send a PUT request to "/api/tasks/execute/673f0d13f417d5864d28c1c7c"
+Then I should receive a 200 OK response
+  And the task should be executed on the system
+  And the response should include execution details:
+    - startTime
+    - endTime
+    - output (command result)
+  And the execution should be added to taskExecutions array
+  And the task should be updated in the database
+```
+
+**Screenshot:**
 ![Execute Task](screenshots/4.png)
 
-### 5. Delete Task (DELETE /api/tasks/{id})
+---
+
+#### Scenario 6: Delete a Task
+**Feature:** Task Deletion
+
+```gherkin
+Given a task with specific id exists in the database
+When I send a DELETE request to "/api/tasks/{id}"
+Then I should receive a 204 No Content response
+  And the task should be removed from the database
+  And subsequent GET requests for that task should return 404
+```
+
+**Screenshot:**
 ![Delete Task](screenshots/5.png)
+
+---
+
+#### Scenario 7: Get Task by ID - Found
+**Feature:** Retrieve Specific Task by ID
+
+```gherkin
+Given a task with id "673f0d13f417d5864d28c1c7c" exists in the database
+When I send a GET request to "/api/tasks?id=673f0d13f417d5864d28c1c7c"
+Then I should receive a 200 OK response
+  And the response body should contain the task details
+  And the task should include all execution history in taskExecutions array
+```
+
+---
+
+#### Scenario 8: Get Task by ID - Not Found
+**Feature:** Return 404 for Non-Existent Task
+
+```gherkin
+Given no task with id "nonexistent123" exists in the database
+When I send a GET request to "/api/tasks?id=nonexistent123"
+Then I should receive a 404 Not Found response
+  And the response body should be empty
+```
+
+---
+
+#### Scenario 9: Command Validation - Unsafe Command
+**Feature:** Prevent Execution of Dangerous Commands
+
+```gherkin
+Given the application has command validation enabled
+When I send a PUT request to "/api/tasks"
+  And the request body contains an unsafe command:
+    {
+      "name": "Dangerous Task",
+      "owner": "Mahesh",
+      "command": "rm -rf /"
+    }
+Then I should receive a 400 Bad Request response
+  And the response should indicate command validation failure
+  And the task should not be created in the database
+```
 
 ## Example Workflow
 
