@@ -1,272 +1,220 @@
 # Kaiburr Assessment - Task 1
 ## REST API for Task Management with MongoDB
 
-This is a Spring Boot application that provides a REST API to manage "task" objects stored in a MongoDB database.
+A Spring Boot application providing REST API endpoints to manage task objects stored in MongoDB, with support for command execution and validation.
 
 ## Technology Stack
 
-- **Java**
-- **Spring Boot**: 3.2.0
-- **Spring Web**: For REST API
-- **Spring Data MongoDB**: For database interaction
-- **Maven**: For project build
-- **Lombok**: To reduce boilerplate code
+- Java 17
+- Spring Boot 3.2.0
+- Spring Data MongoDB
+- Maven 3.9.11
+- Lombok
+- MongoDB Atlas
 
 ## Prerequisites
 
-1. **Java 17** or higher installed
-2. **Maven** installed
-3. **MongoDB Atlas** account (connection string already configured)
+- Java 17 or higher
+- Maven 3.9+
+- MongoDB Atlas account
 
-## Setup Instructions
+## Installation & Setup
 
-### 1. Clone the Repository
-
+**Clone the repository:**
 ```bash
 git clone https://github.com/Mah03esh/kaiburr-task1.git
 cd kaiburr-task1
 ```
 
-### 2. Build the Project
-
+**Build the project:**
 ```bash
 mvn clean install
 ```
 
-### 3. Run the Application
-
+**Run the application:**
 ```bash
 mvn spring-boot:run
 ```
 
-The application will start on `http://localhost:8080`
+The application starts on `http://localhost:8080`
 
-## API Endpoints
+## API Documentation
 
-### 1. Create a Task
-- **Method**: `PUT`
-- **URL**: `/api/tasks`
-- **Body**: JSON Task object
-- **Response**: 201 Created (or 400 Bad Request if command is unsafe)
-
+### Task Object Structure
 ```json
 {
-    "name": "Print Hello",
-    "owner": "Mahesh",
-    "command": "echo Hello World!"
+  "id": "string",
+  "name": "string",
+  "owner": "string",
+  "command": "string",
+  "taskExecutions": [
+    {
+      "startTime": "ISO 8601 datetime",
+      "endTime": "ISO 8601 datetime",
+      "output": "string"
+    }
+  ]
 }
 ```
 
-### 2. Get All Tasks / Get Task by ID
-- **Method**: `GET`
-- **URL**: `/api/tasks` (all tasks) or `/api/tasks?id={taskId}` (specific task)
-- **Response**: 200 OK with task(s) or 404 Not Found
+### Endpoints
 
-### 3. Find Tasks by Name
-- **Method**: `GET`
-- **URL**: `/api/tasks/find?name={searchString}`
-- **Response**: 200 OK with matching tasks or 404 Not Found
+#### 1. Create Task
+```http
+PUT /api/tasks
+Content-Type: application/json
 
-### 4. Delete a Task
-- **Method**: `DELETE`
-- **URL**: `/api/tasks/{id}`
-- **Response**: 204 No Content
-
-### 5. Execute a Task
-- **Method**: `PUT`
-- **URL**: `/api/tasks/execute/{id}`
-- **Response**: 200 OK with updated task (including execution details) or 404 Not Found
-
-## Security Features
-
-The application includes command validation to prevent execution of potentially dangerous commands:
-
-**Blocked Commands**: `rm`, `sudo`, `mv`, `cp`, `chmod`, `chown`, `reboot`, `shutdown`, `dd`, `mkfs`, `format`, `del /f`, `rmdir /s`
-
-## MongoDB Configuration
-
-The application connects to MongoDB Atlas using the connection string in `application.properties`
-
-## Task Execution
-
-When a task is executed via the `/api/tasks/execute/{id}` endpoint:
-
-1. The system retrieves the task from the database
-2. Executes the command locally using `ProcessBuilder`
-3. Captures the output (stdout and stderr)
-4. Records start time, end time, and output
-5. Adds the execution details to the task's execution history
-6. Saves and returns the updated task
-
-## API Testing Documentation
-
-### Test Scenarios (Gherkin Format)
-
-#### Scenario 1: Create a New Task
-**Feature:** Task Creation via REST API
-
-```gherkin
-Given the application is running on localhost:8080
-When I send a PUT request to "/api/tasks"
-  And the request body contains a valid task JSON:
-    {
-      "name": "Print Hello",
-      "owner": "Mahesh",
-      "command": "echo Hello World!"
-    }
-Then I should receive a 201 Created response
-  And the response body should contain the created task with a generated ID
-  And the task should be persisted in MongoDB
+{
+  "name": "Print Hello",
+  "owner": "Mahesh",
+  "command": "echo Hello World!"
+}
 ```
+**Response:** `201 Created` with task object, or `400 Bad Request` for unsafe commands
 
-**Screenshot:**
-![Create Task](screenshots/2.png)
-
----
-
-#### Scenario 2: Retrieve All Tasks
-**Feature:** List All Tasks
-
-```gherkin
-Given tasks exist in the database
-When I send a GET request to "/api/tasks"
-Then I should receive a 200 OK response
-  And the response body should contain an array of all tasks
-  And each task should have id, name, owner, command, and taskExecutions fields
+#### 2. Get All Tasks
+```http
+GET /api/tasks
 ```
+**Response:** `200 OK` with array of all tasks
 
-**Screenshot:**
-![Get All Tasks](screenshots/3.png)
-
----
-
-#### Scenario 3: Search Tasks by Name - Found
-**Feature:** Search Tasks Containing Name String
-
-```gherkin
-Given a task with name "Print Hello" exists in the database
-When I send a GET request to "/api/tasks/find?name=Hello"
-Then I should receive a 200 OK response
-  And the response body should contain an array of matching tasks
-  And each task name should contain the search string "Hello"
+#### 3. Get Task by ID
+```http
+GET /api/tasks?id={taskId}
 ```
+**Response:** `200 OK` with task object, or `404 Not Found`
 
-**Screenshot:**
-![Search Tasks - Found](screenshots/6.png)
-
----
-
-#### Scenario 4: Search Tasks by Name - Not Found
-**Feature:** Search Tasks Returning 404 When Not Found
-
-```gherkin
-Given no tasks with name containing "XYZ_Not_A_Task" exist in the database
-When I send a GET request to "/api/tasks/find?name=XYZ_Not_A_Task"
-Then I should receive a 404 Not Found response
-  And the response body should be empty
+#### 4. Find Tasks by Name
+```http
+GET /api/tasks/find?name={searchString}
 ```
+**Response:** `200 OK` with matching tasks array, or `404 Not Found`
 
----
-
-#### Scenario 5: Execute a Task
-**Feature:** Task Execution with Command Execution
-
-```gherkin
-Given a task with id "673f0d13f417d5864d28c1c7c" exists in the database
-  And the task has command "echo Hello World!"
-When I send a PUT request to "/api/tasks/execute/673f0d13f417d5864d28c1c7c"
-Then I should receive a 200 OK response
-  And the task should be executed on the system
-  And the response should include execution details:
-    - startTime
-    - endTime
-    - output (command result)
-  And the execution should be added to taskExecutions array
-  And the task should be updated in the database
+#### 5. Execute Task
+```http
+PUT /api/tasks/execute/{id}
 ```
+**Response:** `200 OK` with updated task including execution details, or `404 Not Found`
 
-**Screenshot:**
-![Execute Task](screenshots/4.png)
-
----
-
-#### Scenario 6: Delete a Task
-**Feature:** Task Deletion
-
-```gherkin
-Given a task with specific id exists in the database
-When I send a DELETE request to "/api/tasks/{id}"
-Then I should receive a 204 No Content response
-  And the task should be removed from the database
-  And subsequent GET requests for that task should return 404
+#### 6. Delete Task
+```http
+DELETE /api/tasks/{id}
 ```
+**Response:** `204 No Content`
 
-**Screenshot:**
-![Delete Task](screenshots/5.png)
+## Security & Validation
 
----
+The application validates all commands to prevent execution of potentially dangerous operations. The following commands are blocked:
 
-#### Scenario 7: Get Task by ID - Found
-**Feature:** Retrieve Specific Task by ID
+`rm`, `sudo`, `mv`, `cp`, `chmod`, `chown`, `reboot`, `shutdown`, `dd`, `mkfs`, `format`, `del`, `rmdir`
 
-```gherkin
-Given a task with id "673f0d13f417d5864d28c1c7c" exists in the database
-When I send a GET request to "/api/tasks?id=673f0d13f417d5864d28c1c7c"
-Then I should receive a 200 OK response
-  And the response body should contain the task details
-  And the task should include all execution history in taskExecutions array
-```
+Attempts to execute unsafe commands return `400 Bad Request` with an error message.
 
----
+## Task Execution Process
 
-#### Scenario 8: Get Task by ID - Not Found
-**Feature:** Return 404 for Non-Existent Task
+When a task is executed via `/api/tasks/execute/{id}`:
 
-```gherkin
-Given no task with id "nonexistent123" exists in the database
-When I send a GET request to "/api/tasks?id=nonexistent123"
-Then I should receive a 404 Not Found response
-  And the response body should be empty
-```
+1. Retrieves the task from MongoDB
+2. Executes the command using `ProcessBuilder`
+3. Captures stdout and stderr output
+4. Records execution start time and end time
+5. Stores execution details in the task's execution history
+6. Returns the updated task object
 
----
+## Testing & Validation
 
-#### Scenario 9: Command Validation - Unsafe Command
-**Feature:** Prevent Execution of Dangerous Commands
+All API endpoints have been tested using Postman. Test scenarios follow the Given-When-Then syntax for clarity and standardization.
 
-```gherkin
-Given the application has command validation enabled
-When I send a PUT request to "/api/tasks"
-  And the request body contains an unsafe command:
-    {
-      "name": "Dangerous Task",
-      "owner": "Mahesh",
-      "command": "rm -rf /"
-    }
-Then I should receive a 400 Bad Request response
-  And the response should indicate command validation failure
-  And the task should not be created in the database
+### Test Scenarios
+
+**Scenario 1: Application Startup**  
+Given Java 17 and Maven are installed  
+When the application starts via `mvn spring-boot:run`  
+Then the server listens on port 8080 and connects to MongoDB  
+*Screenshot: 1-start.png*
+
+**Scenario 2: Create Task**  
+Given a valid task JSON payload  
+When a PUT request is sent to `/api/tasks`  
+Then a 201 Created response is returned with the task object  
+*Screenshot: 2.png*
+
+**Scenario 3: Get All Tasks**  
+Given tasks exist in the database  
+When a GET request is sent to `/api/tasks`  
+Then a 200 OK response returns an array of all tasks  
+*Screenshot: 3.png*
+
+**Scenario 4: Execute Task**  
+Given a task exists with a safe command  
+When a PUT request is sent to `/api/tasks/execute/{id}`  
+Then a 200 OK response returns the task with execution details (startTime, endTime, output)  
+*Screenshot: 4.png*
+
+**Scenario 5: Delete Task**  
+Given a task exists in the database  
+When a DELETE request is sent to `/api/tasks/{id}`  
+Then a 204 No Content response confirms deletion  
+*Screenshot: 5.png*
+
+**Scenario 6: Find by Name (Success)**  
+Given tasks with matching names exist  
+When a GET request is sent to `/api/tasks/find?name={searchString}`  
+Then a 200 OK response returns matching tasks  
+*Screenshot: 6.png*
+
+**Scenario 7: Get Task by ID (Success)**  
+Given a task with the specified ID exists  
+When a GET request is sent to `/api/tasks?id={id}`  
+Then a 200 OK response returns the single task object  
+*Screenshot: 7.png*
+
+**Scenario 8: Get Task by ID (Not Found)**  
+Given no task exists with the specified ID  
+When a GET request is sent to `/api/tasks?id={invalidId}`  
+Then a 404 Not Found response is returned  
+*Screenshot: 8.png*
+
+**Scenario 9: Find by Name (Not Found)**  
+Given no tasks match the search criteria  
+When a GET request is sent to `/api/tasks/find?name={invalidName}`  
+Then a 404 Not Found response is returned  
+*Screenshot: 9.png*
+
+**Scenario 10: Unsafe Command Validation**  
+Given a task payload contains an unsafe command (e.g., `rm -rf /`)  
+When a PUT request is sent to `/api/tasks`  
+Then a 400 Bad Request response is returned with an error message  
+*Screenshot: 10.png*
+
+## Architecture
+
+The application follows a layered architecture pattern:
+
+- **Controller Layer** (`TaskController`): Handles HTTP requests and responses
+- **Service Layer** (`TaskService`): Contains business logic and validation
+- **Repository Layer** (`TaskRepository`): Manages database operations
+- **Model Layer** (`Task`, `TaskExecution`): Defines data structures
+
+## Configuration
+
+MongoDB connection details are configured in `src/main/resources/application.properties`:
+```properties
+spring.data.mongodb.uri=<MongoDB Atlas connection string>
 ```
 
 ## Example Workflow
 
-1. **Create a task**: `PUT /api/tasks`
-2. **View all tasks**: `GET /api/tasks`
-3. **Execute the task**: `PUT /api/tasks/execute/{id}`
-4. **View execution history**: `GET /api/tasks?id={id}`
-5. **Search for tasks**: `GET /api/tasks/find?name=Hello`
-6. **Delete the task**: `DELETE /api/tasks/{id}`
-
-## Notes
-
-- The application runs on Windows with `cmd.exe`, but also supports Linux/macOS with `sh`
-- All task executions are stored in the database for historical tracking
-- The API uses proper HTTP status codes (200, 201, 204, 400, 404)
-- Input validation prevents execution of unsafe system commands
+1. Create a task with a safe command
+2. Retrieve all tasks to verify creation
+3. Execute the task to run the command
+4. View execution history in the task object
+5. Search for tasks by name
+6. Delete the task when no longer needed
 
 ## Author
 
-**Mahesh**  
+Mahesh  
 Created for Kaiburr Assessment - Task 1
 
 ## License
