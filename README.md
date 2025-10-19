@@ -131,61 +131,89 @@ All API endpoints have been tested using Postman. Test scenarios follow the Give
 Given Java 17 and Maven are installed  
 When the application starts via `mvn spring-boot:run`  
 Then the server listens on port 8080 and connects to MongoDB  
-*Screenshot: 1-start.png*
+
+![Application Startup](screenshots/1-start.png)
+
+---
 
 **Scenario 2: Create Task**  
 Given a valid task JSON payload  
 When a PUT request is sent to `/api/tasks`  
 Then a 201 Created response is returned with the task object  
-*Screenshot: 2.png*
+
+![Create Task](screenshots/2.png)
+
+---
 
 **Scenario 3: Get All Tasks**  
 Given tasks exist in the database  
 When a GET request is sent to `/api/tasks`  
 Then a 200 OK response returns an array of all tasks  
-*Screenshot: 3.png*
+
+![Get All Tasks](screenshots/3.png)
+
+---
 
 **Scenario 4: Execute Task**  
 Given a task exists with a safe command  
 When a PUT request is sent to `/api/tasks/execute/{id}`  
 Then a 200 OK response returns the task with execution details (startTime, endTime, output)  
-*Screenshot: 4.png*
+
+![Execute Task](screenshots/4.png)
+
+---
 
 **Scenario 5: Delete Task**  
 Given a task exists in the database  
 When a DELETE request is sent to `/api/tasks/{id}`  
 Then a 204 No Content response confirms deletion  
-*Screenshot: 5.png*
+
+![Delete Task](screenshots/5.png)
+
+---
 
 **Scenario 6: Find by Name (Success)**  
 Given tasks with matching names exist  
 When a GET request is sent to `/api/tasks/find?name={searchString}`  
 Then a 200 OK response returns matching tasks  
-*Screenshot: 6.png*
+
+![Find by Name - Success](screenshots/6.png)
+
+---
 
 **Scenario 7: Get Task by ID (Success)**  
 Given a task with the specified ID exists  
 When a GET request is sent to `/api/tasks?id={id}`  
 Then a 200 OK response returns the single task object  
-*Screenshot: 7.png*
+
+![Get Task by ID - Success](screenshots/7.png)
+
+---
 
 **Scenario 8: Get Task by ID (Not Found)**  
 Given no task exists with the specified ID  
 When a GET request is sent to `/api/tasks?id={invalidId}`  
 Then a 404 Not Found response is returned  
-*Screenshot: 8.png*
+
+![Get Task by ID - Not Found](screenshots/8.png)
+
+---
 
 **Scenario 9: Find by Name (Not Found)**  
 Given no tasks match the search criteria  
 When a GET request is sent to `/api/tasks/find?name={invalidName}`  
 Then a 404 Not Found response is returned  
-*Screenshot: 9.png*
+
+![Find by Name - Not Found](screenshots/9.png)
+
+---
 
 **Scenario 10: Unsafe Command Validation**  
 Given a task payload contains an unsafe command (e.g., `rm -rf /`)  
 When a PUT request is sent to `/api/tasks`  
 Then a 400 Bad Request response is returned with an error message  
-*Screenshot: 10.png*
+
+![Unsafe Command Validation](screenshots/10.png)
 
 ## Architecture
 
