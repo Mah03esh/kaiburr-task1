@@ -5,7 +5,7 @@ This is a Spring Boot application that provides a REST API to manage "task" obje
 
 ## Technology Stack
 
-- **Java**: JDK 17
+- **Java**
 - **Spring Boot**: 3.2.0
 - **Spring Web**: For REST API
 - **Spring Data MongoDB**: For database interaction
