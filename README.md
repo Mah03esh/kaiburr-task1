@@ -159,7 +159,7 @@ Given a task exists with a safe command
 When a PUT request is sent to `/api/tasks/execute/{id}`  
 Then a 200 OK response returns the task with execution details (startTime, endTime, output)  
 
-![Execute Task](screenshots/4.png)
+![Execute Task](screenshots/8.png)
 
 ---
 
@@ -195,7 +195,7 @@ Given no task exists with the specified ID
 When a GET request is sent to `/api/tasks?id={invalidId}`  
 Then a 404 Not Found response is returned  
 
-![Get Task by ID - Not Found](screenshots/8.png)
+![Get Task by ID - Not Found](screenshots/4.png)
 
 ---
 
