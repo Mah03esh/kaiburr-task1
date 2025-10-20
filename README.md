@@ -166,7 +166,7 @@ Then a 200 OK response returns the task with execution details (startTime, endTi
 **Scenario 5: Delete Task**  
 Given a task exists in the database  
 When a DELETE request is sent to `/api/tasks/{id}`  
-Then a 204 No Content response confirms deletion  
+Then a 404 No Content response confirms deletion  
 
 ![Delete Task](screenshots/5.png)
 
