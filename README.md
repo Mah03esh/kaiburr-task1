@@ -168,7 +168,7 @@ Given a task exists in the database
 When a DELETE request is sent to `/api/tasks/{id}`  
 Then a 204 No Content response confirms deletion  
 
-![Delete Task](screenshots/5.png)
+![Delete Task](screenshots/9.png)
 
 ---
 
@@ -186,7 +186,7 @@ Given a task with the specified ID exists
 When a GET request is sent to `/api/tasks?id={id}`  
 Then a 200 OK response returns the single task object  
 
-![Get Task by ID - Success](screenshots/7.png)
+![Get Task by ID - Success](screenshots/4.png)
 
 ---
 
@@ -195,7 +195,7 @@ Given no task exists with the specified ID
 When a GET request is sent to `/api/tasks?id={invalidId}`  
 Then a 404 Not Found response is returned  
 
-![Get Task by ID - Not Found](screenshots/4.png)
+![Get Task by ID - Not Found](screenshots/7.png)
 
 ---
 
@@ -204,7 +204,7 @@ Given no tasks match the search criteria
 When a GET request is sent to `/api/tasks/find?name={invalidName}`  
 Then a 404 Not Found response is returned  
 
-![Find by Name - Not Found](screenshots/9.png)
+![Find by Name - Not Found](screenshots/5.png)
 
 ---
 
