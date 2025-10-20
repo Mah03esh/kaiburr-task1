@@ -195,7 +195,7 @@ Given no task exists with the specified ID
 When a GET request is sent to `/api/tasks?id={invalidId}`  
 Then a 404 Not Found response is returned  
 
-![Get Task by ID - Not Found](screenshots/7.png)
+![Get Task by ID - Not Found](screenshots/5.png)
 
 ---
 
@@ -204,7 +204,7 @@ Given no tasks match the search criteria
 When a GET request is sent to `/api/tasks/find?name={invalidName}`  
 Then a 404 Not Found response is returned  
 
-![Find by Name - Not Found](screenshots/5.png)
+![Find by Name - Not Found](screenshots/7.png)
 
 ---
 
